@@ -3,6 +3,7 @@ package com.QuizApp.QuizApp.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,5 +48,46 @@ public class QuestionService {
 		 questionDao.save(question);
 		 return new ResponseEntity<>("success",HttpStatus.CREATED);
 		
+	}
+
+
+
+	public ResponseEntity<String> updateQuestion(Integer id, Question updatedQuestion) {
+		Optional<Question> existing=questionDao.findById(id);
+		
+		if(existing.isPresent()) {
+			Question q = existing.get();
+			
+			q.setQuestionTitle(updatedQuestion.getQuestionTitle());
+			q.setOption1(updatedQuestion.getOption1());
+			q.setOption2(updatedQuestion.getOption2());
+			q.setOption3(updatedQuestion.getOption3());
+			q.setOption4(updatedQuestion.getOption4());
+			q.setRightAnswer(updatedQuestion.getRightAnswer());
+			q.setDifficultyLevel(updatedQuestion.getDifficultyLevel());
+			q.setCategory(updatedQuestion.getCategory());
+			
+			
+			questionDao.save(q);
+			
+			return new ResponseEntity<>("Question updated Successfully",HttpStatus.OK);
+			
+			
+			
+		}
+		
+		return new ResponseEntity<>("Question not found",HttpStatus.NOT_FOUND);
+		
+	}
+
+
+
+	public ResponseEntity<String> deleteQuestion(Integer id) {
+		if( questionDao.existsById(id)) {
+			 questionDao.deleteById(id);
+			 return new ResponseEntity<>("Question deleted Successfully",HttpStatus.OK);			 
+		}
+		
+		return new ResponseEntity<>("Question not found",HttpStatus.NOT_FOUND);
 	}
 }
