@@ -3,15 +3,20 @@ package com.QuizApp.QuizApp.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import com.QuizApp.QuizApp.Dao.UserRepo;
 import com.QuizApp.QuizApp.Model.User;
+import com.QuizApp.QuizApp.Security.JwtUtil;
 
 @RestController
+@RequestMapping("/auth")
 public class AuthController {
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Autowired
     private UserRepo repo;
@@ -22,17 +27,26 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authManager;
 
-    // ✅ REGISTER
+   
     @PostMapping("/register")
     public String register(@RequestBody User user) {
 
+        if (repo.findByUsername(user.getUsername()).isPresent()) {
+            return "Username already exists";
+        }
+
         user.setPassword(encoder.encode(user.getPassword()));
+
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole("ROLE_USER");
+        }
+
         repo.save(user);
 
         return "User Registered Successfully";
     }
 
-    // ✅ LOGIN
+   
     @PostMapping("/login")
     public String login(@RequestBody User user) {
 
@@ -44,9 +58,16 @@ public class AuthController {
         );
 
         if (authentication.isAuthenticated()) {
-            return "Login Successful";
-        } else {
-            return "Login Failed";
+
+            User dbUser = repo.findByUsername(user.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            return jwtUtil.generateToken(
+                    dbUser.getUsername(),
+                    dbUser.getRole()
+            );
         }
+
+        return "Invalid Login";
     }
 }
