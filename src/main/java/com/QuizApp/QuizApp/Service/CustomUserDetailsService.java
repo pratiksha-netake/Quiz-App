@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import com.QuizApp.QuizApp.Dao.UserRepo;
 import com.QuizApp.QuizApp.Model.User;
 
-@Service  
+@Service
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
@@ -27,7 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.get().getUsername())
                 .password(user.get().getPassword())
-                .roles(user.get().getRole().replace("ROLE_", "")) // ✅ important
+                .roles(user.get().getRole().replace("ROLE_", ""))
                 .build();
     }
 }
