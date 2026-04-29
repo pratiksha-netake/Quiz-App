@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="container">
+<h2>Login Page</h2>
+
+<form id="loginForm">
+
+Username:
+<input type="text" id="username" required><br><br>
+
+Password:
+<input type="password" id="password" required><br><br>
+
+<input type="submit" value="Login">
+
+</form>
+
+<a href="register.html">Register here</a>
+</div>
+
+
+
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    const user = {
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value
+    };
+
+    const response = await fetch("/auth/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(user)
+    });
+
+    
+    
+    if(response.ok)
+    {
+    	const data = await response.json();
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("role",data.role);
+        alert("Login Successful");
+        
+        if(data.role==="ROLE_ADMIN"){
+        	window.location.href = "admin.html";
+        	
+        }else{
+        window.location.href = "user.html";
+        }
+    }
+    
+    else
+    {
+    	const error=await response.json();
+    	alert(error.message);
+    }
+});
+</script>
+
+</body>
+</html>

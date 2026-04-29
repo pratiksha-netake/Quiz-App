@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 @EnableWebSecurity
@@ -25,9 +26,32 @@ public class SecurityConfig {
 
         http
             .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.disable())
+            .cors(cors -> cors.configurationSource(request ->{
+            	CorsConfiguration config =new CorsConfiguration();
+            	config.addAllowedOrigin("http://localhost:8080");
+            	config.addAllowedMethod("*");
+            	config.addAllowedHeader("*");
+            	config.setAllowCredentials(true);
+            	return config;
+            }))
 
             .authorizeHttpRequests(auth -> auth
+            		
+            		.requestMatchers(
+            				"/",
+            				"/register.html",
+            				"/user.html",
+            				 "/*.html",
+            				"/login.html",
+            				"/admin.html",
+            				 "/createquiz.html",   
+            	                "/updatequiz.html",
+            	                "/updatequiz1.html",
+            	                "/deletequiz.html",
+            				"/css/**"
+            				).permitAll()
+            		
+            	.requestMatchers("/favicon.ico").permitAll()
 
               
                 .requestMatchers("/auth/**").permitAll()

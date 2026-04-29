@@ -46,8 +46,20 @@ public class QuestionService {
 
 	public ResponseEntity<String> addQuestion(Question question) {
 		 questionDao.save(question);
-		 return new ResponseEntity<>("success",HttpStatus.CREATED);
+		 
+		return new ResponseEntity<>("Question Saved Successfully",HttpStatus.CREATED);
 		
+	}
+	
+	public ResponseEntity<Question> getQuestionById(Integer id) {
+
+	    Optional<Question> question = questionDao.findById(id);
+
+	    if (question.isPresent()) {
+	        return new ResponseEntity<>(question.get(), HttpStatus.OK);
+	    } else {
+	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	    }
 	}
 
 
@@ -84,6 +96,8 @@ public class QuestionService {
 
 	public ResponseEntity<String> deleteQuestion(Integer id) {
 		if( questionDao.existsById(id)) {
+			
+			questionDao.deleteFromQuizQuestions(id);
 			 questionDao.deleteById(id);
 			 return new ResponseEntity<>("Question deleted Successfully",HttpStatus.OK);			 
 		}

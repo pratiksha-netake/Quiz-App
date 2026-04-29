@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Delete Quiz</title>
+<link rel="stylesheet" href=css/style1.css>
+</head>
+<body>
+
+<button id="categoryBtn" onclick="goBack()"> Back</button>
+<form  id="deleteForm">
+<div class="form-group">
+<label> Enter Id to Delete :</label>
+<input type="text" id="qid" required><br><br>
+</div>
+
+
+<button type="submit" >Delete Quiz</button>
+</form>
+
+
+<script>
+document.getElementById("deleteForm").addEventListener("submit",async function(e){
+	e.preventDefault();
+	
+	
+	const id = document.getElementById("qid").value;
+	const token=localStorage.getItem("token");
+	console.log("TOKEN:",token);
+	
+	try{
+		const response=await fetch("/questions/delete/" + id,{
+			method :"DELETE",
+			headers:{
+				"Authorization" : "Bearer " + token
+			}
+		});
+		
+		console.log("STATUS:",response.status);
+		
+		const result=await response.text();
+		alert(result);
+	}catch(err){
+		console.error(err);
+		alert("Delete Failed");
+	}
+});
+
+function goBack(){
+	 window.history.back();
+}
+
+
+</script>
+</body>
+</html>
+

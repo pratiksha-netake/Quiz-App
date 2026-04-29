@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title> View All Questions</title>
+<link rel="stylesheet" href=css/style1.css>
+
+<style>
+body {
+    margin: 0;
+    padding: 0;
+}
+#container {
+    width: 80%;
+    height: 80vh;   /* fixed height */
+    
+    margin: 80px auto 20px auto; /* space from top */
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    overflow-y: auto;   /* ✅ enables vertical scroll */
+    overflow-x: hidden;
+
+	background:linear-gradient(135deg,#2C003E, #4A0072); /* same theme color */
+    border-radius: 10px;
+    padding: 20px;
+}
+
+#categoryBtn1{
+position:fixed;
+top:20px;
+right:20px;
+padding:10px 15px;
+color:white;
+border-radius:6px;
+background:#2A2A40;
+border:none;
+width:20%;
+}
+
+
+#container input {
+   width:100%;
+	padding:10px;
+	margin-top:3px;
+	margin-bottom:5px;
+	border:none;
+	background:#2A2A40;
+	color:white;
+	border-radius:6px;
+}
+
+#container::-webkit-scrollbar {
+    width: 8px;
+}
+
+
+
+
+
+#container input:hover {
+	background: #E91E63;
+}
+
+#categoryBtn1:hover{
+	background: #E91E63;
+}
+
+
+</style>
+</head>
+<body>
+
+<button id="categoryBtn" onclick="goBack()"> Back</button>
+<button id="categoryBtn1" onclick="goToCategory()">Category</button>
+<div id="container"></div>
+
+
+<script>
+
+function goToCategory(){
+	window.location.href="category.html";
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+		const token=localStorage.getItem("token");
+		
+		fetch("/questions/allQuestions",{
+			headers:{
+				"Authorization":"Bearer " + token
+			}
+		})
+		.then(res=>{
+			console.log("Status",res.status);
+			
+			if(!res.ok){
+				throw new Error("Not authorized or Failed to fetch data");
+			}
+			
+			return res.json();
+		})
+		
+		.then(data=>{
+			const container=document.getElementById("container");
+			
+			if(data.length ===0){
+				container.innerHTML="<p> No Question Found</p>";
+				return;
+			}
+			
+			data.forEach(q=>{
+				const input=document.createElement("input");
+				input.type="text";
+				
+				input.value=q.id+":"+q.questionTitle;
+				input.readOnly=true;
+				input.onclick=function(){
+					window.location.href="SolveQuestion.html?id=" + q.id;
+				};
+				
+				container.appendChild(input);
+				container.appendChild(document.createElement("br"));
+				
+				
+			});
+		})
+		
+		
+		.catch(err =>{
+			console.error(err);
+			alert(err.message);
+	});
+});
+
+
+function goBack(){
+    window.history.back();
+}
+
+</script>
+</body>
+</html>

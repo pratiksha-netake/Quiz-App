@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Page</title>
+<link rel="stylesheet" href="css/style.css">
+
+
+
+
+</head><link rel="stylesheet" href="css/style1.css">
+<body>
+
+<button id="categoryBtn" onclick="goBack()"> Back</button>
+
+<div class="container">
+
+<button onclick="goToCreate()">Create Quiz</button>
+<button onclick="goToUpdate()">Update Quiz</button>
+<button onclick="goToDelete()">Delete Quiz</button>
+
+</div>
+
+<script>
+function goToCreate(){
+    window.location.href="/createquiz.html";
+}
+
+function goToUpdate(){
+    window.location.href="/updatequiz.html"; 
+}
+
+function goToDelete(){
+    window.location.href="/delete.html"; 
+}
+
+function goBack(){
+	 window.history.back();
+}
+</script>
+
+</body>
+</html>

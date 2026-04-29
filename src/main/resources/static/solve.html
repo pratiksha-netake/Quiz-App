@@ -1,0 +1,95 @@
+<html>
+<head>
+
+<link rel="stylesheet" href="css/style1.css">
+<title> Question </title>
+
+</head>
+<body>
+
+<form  id="quizform" >
+
+<h2 id="questionTitle"></h2>
+
+<div>
+<label><input type="radio" name="option" id="opt1"><span id="text1"></span></label><br>
+<label><input type="radio" name="option" id="opt2"><span id="text2"></span></label><br>
+<label><input type="radio" name="option" id="opt3"><span id="text3"></span></label><br>
+<label><input type="radio" name="option" id="opt4"><span id="text4"></span></label><br>
+</div>
+
+
+<button type="submit"> Submit Answer</button>
+</form>
+
+
+
+<script>
+
+let correctAnswer=" ";
+
+document.addEventListener("DOMContentLoaded",async function(){
+	const params=new URLSearchParams(window.location.search);
+	const id=params.get("id");
+	
+	const token=localStorage.getItem("token");
+	
+	try{
+		const res=await fetch("/questions/" + id,{
+			headers:{
+				"Authorization":"Bearer " + token
+			}
+		});
+		
+		
+		if(!res.ok){
+			throw new Error("Failed to load Question");
+		}
+		
+		const q=await res.json();
+		
+		document.getElementById("questionTitle").innerText = q.questionTitle;
+		document.getElementById("text1").innerText=q.option1;
+		document.getElementById("text2").innerText=q.option2;
+		document.getElementById("text3").innerText=q.option3;
+		document.getElementById("text4").innerText=q.option4;
+		
+		document.getElementById("opt1").value=q.option1;
+		document.getElementById("opt2").value=q.option2;
+		document.getElementById("opt3").value=q.option3;
+		document.getElementById("opt4").value=q.option4;
+		
+		
+		correctAnswer= q.rightAnswer;
+	}catch(err){
+		alert(err.message);
+	}
+		
+		
+		
+	});
+	
+	document.getElementById("quiz-form").addEventListener("submit",function(e){
+		e.preventDefault();
+		
+		const selected=document.querySelector('input[name="option"]:checked');
+		
+		if(!selected){
+			alert("Please select an answer");
+			return;
+		}
+		
+		const userAnswer=selected.value;
+		
+		if(userAnswer===correctAnswer){
+			alert("Correct Answer");
+		}else{
+			alert("wrong Answer" + correctAnswer);
+		}
+	});
+
+
+</script>
+
+</body>
+</html>

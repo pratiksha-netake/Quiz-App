@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Categories</title>
+<link rel="stylesheet" href="css/style1.css">
+
+
+
+<style>
+#container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Category Box */
+.category-box {
+    width: 200px;
+    height: 120px;
+   background:#2A2A40;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.category-box:hover {
+    background: #E91E63;
+    transform: scale(1.05);
+}
+</style>
+
+
+</head>
+<body>
+
+<button id="categoryBtn" onclick="goBack()"> Back</button>
+
+<div id="container"></div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", async function(){
+
+    const token = localStorage.getItem("token");
+
+    try{
+        const res = await fetch("/questions/allQuestions", {
+            headers:{
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        if(!res.ok){
+            throw new Error("Failed to fetch data");
+        }
+
+        const data = await res.json();
+
+        // 👉 Extract unique categories
+        const categories = [...new Set(data.map(q => q.category))];
+
+        const container = document.getElementById("container");
+
+        categories.forEach(cat => {
+
+            const div = document.createElement("div");
+            div.className = "category-box";
+            div.innerText = cat;
+
+          
+            div.onclick = function(){
+                window.location.href = "categoryQuestions.html?category=" + cat;
+            };
+
+            container.appendChild(div);
+        });
+
+    }catch(err){
+        alert(err.message);
+    }
+
+});
+
+
+function goBack(){
+	 window.history.back();
+}
+
+</script>
+
+</body>
+</html>

@@ -31,12 +31,28 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
+        // ✅ CHANGED HERE (IMPORTANT FIX)
+        String path = request.getServletPath();
+        System.out.println("PATH: " + path);
+
+        // ✅ YOUR LOGIC (UNCHANGED, just works correctly now)
+        if (
+                path.endsWith(".html") ||
+                path.startsWith("/auth/") ||
+                path.startsWith("/css/") ||
+                path.equals("/")
+        ) {
+            System.out.println("SKIPPING JWT FOR: " + path);
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 🔐 JWT logic (UNCHANGED)
         String authHeader = request.getHeader("Authorization");
 
         String token = null;
         String username = null;
 
-     
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
 
@@ -47,14 +63,12 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         }
 
-        
         if (username != null &&
                 SecurityContextHolder.getContext().getAuthentication() == null) {
 
             UserDetails userDetails =
                     userDetailsService.loadUserByUsername(username);
 
-           
             if (jwtUtil.validateToken(token, username)) {
 
                 UsernamePasswordAuthenticationToken authToken =
@@ -69,7 +83,6 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         }
 
-        
         filterChain.doFilter(request, response);
     }
 }

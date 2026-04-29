@@ -1,0 +1,109 @@
+<html>
+<head>
+
+<link rel="stylesheet" href="css/style1.css">
+<title> Create Quiz </title>
+
+
+
+</head>
+<body>
+<button id="categoryBtn" onclick="goBack()"> Back</button>
+
+<form  id="quizform" >
+
+
+<div class="form-group">
+<label>Category:</label>
+<input type="text" id="category" required><br><br>
+</div>
+
+
+
+<div class="form-group">
+<label>Question:</label>
+<input type="text" id="question" required><br><br>
+</div>
+
+
+<div class="form-group">
+<label>Option 1:</label>
+<input type="text" id="opt1" placeholder="Option 1"><br><br>
+</div>
+
+<div class="form-group">
+<label>Option 2:</label>
+<input type="text" id="opt2" placeholder="Option 2"><br><br>
+</div>
+
+<div class="form-group">
+<label>Option 3:</label>
+<input type="text" id="opt3" placeholder="Option 3"><br><br>
+</div>
+
+<div class="form-group">
+<label>Option 4:</label>
+<input type="text" id="opt4" placeholder="Option 4"><br><br>
+</div>
+
+
+<div class="form-group">
+<label>Correct Answer :</label>
+<input type="text" id="correct" placeholder="Right Answer"><br><br>
+</div>
+
+
+<div class="form-group">
+<label>Difficulty Level :</label>
+<select id="level">
+<option value="High">High</option>
+<option value="Medium">Medium</option>
+<option value="Low">Low</option>
+</select><br><br>
+</div>
+
+<input type="submit" value="Create Quiz">
+
+
+</form>
+
+<script>
+document.getElementById("quizform").addEventListener("submit",async function(e){
+	e.preventDefault();
+	
+	const question={
+			questionTitle: document.getElementById("question").value,
+		    option1:document.getElementById("opt1").value,
+		    option2:document.getElementById("opt2").value,
+		    option3:document.getElementById("opt3").value,
+		    option4:document.getElementById("opt4").value,
+		    rightAnswer:document.getElementById("correct").value,
+		    difficultyLevel:document.getElementById("level").value,
+		    	category:document.getElementById("category").value
+		    };
+	
+	const token=localStorage.getItem("token");
+	const response=await fetch("/questions/add",{
+		method:"POST",
+		headers:{
+			"Content-Type":"application/json",
+			"Authorization":"Bearer " + token
+		},
+		
+		body: JSON.stringify(question)
+	});
+	
+	const result= await response.text();
+	alert(result);
+	
+	
+});
+
+
+function goBack(){
+	 window.history.back();
+}
+
+</script>
+</body>
+</html>

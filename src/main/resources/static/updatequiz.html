@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Update Quiz</title>
+<link rel="stylesheet" href=css/style1.css>
+</head>
+<body>
+
+<button id="categoryBtn" onclick="goBack()"> Back</button>
+
+<form  onsubmit="getQuiz(event)">
+<div class="form-group">
+<label> Enter Id to search :</label>
+<input type="text" id="qid" required><br><br>
+</div>
+
+
+<button type="submit" >Get Quiz</button>
+</form>
+
+<script>
+
+function getQuiz(e){
+	e.preventDefault();
+	
+	const id = document.getElementById("qid").value;
+	window.location.href="/updatequiz1.html?id=" + id;
+}
+
+
+
+function goBack(){
+	 window.history.back();
+}
+</script>
+
+</body>
+</html>

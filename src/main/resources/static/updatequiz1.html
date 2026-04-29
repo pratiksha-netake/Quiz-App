@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Update Page</title>
+<link rel="stylesheet" href="css/style1.css">
+</head>
+<body>
+
+
+<button id="categoryBtn" onclick="goBack()"> Back</button>
+
+<form id="updateForm">
+
+<div class="form-group">
+<label>Category:</label>
+<input type="text" id="category" required><br><br>
+</div>
+
+<div class="form-group">
+<label>Question:</label>
+<input type="text" id="question" required><br><br>
+</div>
+
+<div class="form-group">
+<label>Option 1:</label>
+<input type="text" id="opt1"><br><br>
+</div>
+
+<div class="form-group">
+<label>Option 2:</label>
+<input type="text" id="opt2"><br><br>
+</div>
+
+<div class="form-group">
+<label>Option 3:</label>
+<input type="text" id="opt3"><br><br>
+</div>
+
+<div class="form-group">
+<label>Option 4:</label>
+<input type="text" id="opt4"><br><br>
+</div>
+
+<div class="form-group">
+<label>Correct Answer:</label>
+<input type="text" id="correct"><br><br>
+</div>
+
+<div class="form-group">
+<label>Difficulty Level:</label>
+<select id="level">
+<option value="High">High</option>
+<option value="Medium">Medium</option>
+<option value="Low">Low</option>
+</select><br><br>
+</div>
+
+<input type="submit" value="Update Quiz">
+
+</form>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    const token = localStorage.getItem("token");
+
+    // 🔥 LOAD QUESTION BY ID
+    fetch("/questions/" + id, {
+    	headers: {
+    	    "Authorization": "Bearer " + token   // ✅ space added
+    	}
+    })
+    .then(res => {
+    	
+    	console.log("STATUS",res.status);
+        if (!res.ok) {
+            throw new Error("Not Authorized or Question Not Found");
+        }
+        return res.json();
+    })
+    .then(q => {
+        if (!q) {
+            alert("Question not found");
+            return;
+        }
+
+        document.getElementById("question").value = q.questionTitle;
+        document.getElementById("opt1").value = q.option1;
+        document.getElementById("opt2").value = q.option2;
+        document.getElementById("opt3").value = q.option3;
+        document.getElementById("opt4").value = q.option4;
+        document.getElementById("correct").value = q.rightAnswer;
+        document.getElementById("category").value = q.category;
+        document.getElementById("level").value = q.difficultyLevel;
+    })
+    .catch(err => {
+        console.error(err);
+        alert(err.message);
+    });
+
+    // 🔥 UPDATE QUESTION
+    document.getElementById("updateForm").addEventListener("submit", async function(e){
+        e.preventDefault();
+
+        const question = {
+            questionTitle: document.getElementById("question").value,
+            option1: document.getElementById("opt1").value,
+            option2: document.getElementById("opt2").value,
+            option3: document.getElementById("opt3").value,
+            option4: document.getElementById("opt4").value,
+            rightAnswer: document.getElementById("correct").value,
+            difficultyLevel: document.getElementById("level").value,
+            category: document.getElementById("category").value
+        };
+
+        try {
+            const response = await fetch("/questions/update/" + id, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token 
+                },
+                body: JSON.stringify(question)
+            });
+
+            const result = await response.text();
+            alert(result);
+
+        } catch (err) {
+            console.error(err);
+            alert("Update failed");
+        }
+    });
+
+});
+
+
+
+function goBack(){
+	 window.history.back();
+}
+</script>
+
+</body>
+</html>

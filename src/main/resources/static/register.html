@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Register</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="container">
+<h2>Register Page</h2>
+
+<form id="registerForm">
+
+Username:
+<input type="text" id="username" required><br><br>
+
+Password:
+<input type="password" id="password" required><br><br>
+
+Role:
+<select id="role">
+<option value="ROLE_ADMIN">ROLE_ADMIN</option>
+<option value="ROLE_USER">ROLE_USER</option>
+</select><br><br>
+
+<input type="submit" value="Register">
+
+</form>
+
+<a href="login.html">Login here</a>
+</div>
+
+
+
+
+<script>
+document.getElementById("registerForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    const user = {
+        username: document.getElementById("username").value,
+        password: document.getElementById("password").value,
+        role: document.getElementById("role").value
+    };
+
+    const response = await fetch("/auth/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(user)
+    });
+
+    const result = await response.text();
+    
+    
+    if(result==="User Registered Successfully"){
+    	  alert(result);
+    	  window.location.href = "login.html";   	
+    }else{
+    alert(result);
+    }
+  
+});
+</script>
+
+
+
+</body>
+</html>

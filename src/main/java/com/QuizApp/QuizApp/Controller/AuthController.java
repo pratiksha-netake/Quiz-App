@@ -1,6 +1,10 @@
 package com.QuizApp.QuizApp.Controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -48,26 +52,41 @@ public class AuthController {
 
    
     @PostMapping("/login")
-    public String login(@RequestBody User user) {
+    public ResponseEntity<?> login(@RequestBody User user) {
 
-        Authentication authentication = authManager.authenticate(
+        try{
+        	Authentication authentication = authManager.authenticate(
+        
                 new UsernamePasswordAuthenticationToken(
                         user.getUsername(),
                         user.getPassword()
                 )
         );
 
-        if (authentication.isAuthenticated()) {
+       
 
             User dbUser = repo.findByUsername(user.getUsername())
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            return jwtUtil.generateToken(
+            String token= jwtUtil.generateToken(
                     dbUser.getUsername(),
                     dbUser.getRole()
             );
+            
+            Map <String,String> response=new HashMap<>();
+            response.put("token", token);
+            response.put("role", dbUser.getRole());
+            
+            return  ResponseEntity.ok(response);
+        }catch(Exception e) {
+        	Map<String ,String> error = new HashMap<>();
+        	error.put("message", "Invalid username or password");
+        	
+        	return ResponseEntity
+        			.status(401)
+        			.body(error);
         }
 
-        return "Invalid Login";
+       
     }
 }

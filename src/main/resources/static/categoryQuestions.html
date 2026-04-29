@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title> View Category Questions</title>
+<link rel="stylesheet" href="css/style1.css">
+
+<style>
+body {
+    margin: 0;
+    padding: 0;
+}
+
+/* ✅ SCROLLABLE CONTAINER */
+#container {
+    width: 80%;
+    height: 80vh;
+
+    margin: 80px auto 20px auto;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    background: linear-gradient(135deg,#2C003E, #4A0072);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+/* ✅ INPUT STYLE SAME AS OTHER PAGE */
+#container input{
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0;
+
+    border: none;
+    border-radius: 6px;
+
+    background: #2A2A40;
+    color: white;
+
+    cursor: pointer;
+}
+
+#container input:hover{
+    background: #E91E63;
+}
+
+/* ✅ SCROLLBAR STYLE */
+#container::-webkit-scrollbar {
+    width: 8px;
+}
+
+
+
+</style>
+</head>
+
+<body>
+
+<button id="categoryBtn" onclick="goBack()"> Back</button>
+
+<div id="container"></div>
+
+<script>
+
+function goToCategory(){
+    window.location.href = "category.html";
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const params = new URLSearchParams(window.location.search);
+    const category = params.get("category");
+
+    if(!category){
+        alert("No category selected");
+        return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    fetch("/questions/category/" + category,{
+        headers:{
+            "Authorization":"Bearer " + token
+        }
+    })
+    .then(res=>{
+        console.log("Status:", res.status);
+
+        if(!res.ok){
+            throw new Error("Not authorized or Failed to fetch data");
+        }
+
+        return res.json();
+    })
+
+    .then(data=>{
+        const container = document.getElementById("container");
+
+        if(data.length === 0){
+            container.innerHTML = "<p>No Questions Found</p>";
+            return;
+        }
+
+        data.forEach(q=>{
+            const input = document.createElement("input");
+            input.type = "text";
+
+            input.value = q.id + " : " + q.questionTitle;
+            input.readOnly = true;
+
+            input.onclick = function(){
+                window.location.href = "SolveQuestion.html?id=" + q.id;
+            };
+
+            container.appendChild(input);
+        });
+    })
+
+    .catch(err =>{
+        console.error(err);
+        alert(err.message);
+    });
+});
+
+function goBack(){
+     window.history.back();
+}
+
+</script>
+
+</body>
+</html>

@@ -31,6 +31,13 @@ public class QuestionController {
         return questionService.getAllQuestions();
     }
     
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<Question> getQuestionById(@PathVariable Integer id) {
+
+        return questionService.getQuestionById(id);
+    }
+    
     @GetMapping("category/{category}")
     public ResponseEntity<List<Question>> getQuestionsByCategory(@PathVariable("category") String category)
     {
@@ -44,7 +51,7 @@ public class QuestionController {
     	
     }
     
-    @PutMapping("/update{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<String> updatedQuestion(
     		@PathVariable Integer id,
     		@RequestBody Question updatedQuestion){
